@@ -1,5 +1,5 @@
 const express = require('express');
-const Course = require('../models/course');
+const Course = require('../models/Course');
 const { verifyToken, isInstructor } = require('../middleware/auth');
 
 const router = express.Router();

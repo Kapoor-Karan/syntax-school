@@ -4,10 +4,12 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth');
 const courseRoutes = require('./routes/courses');
+const quizRoutes = require('./routes/quizzes');
 
 const app = express();
 
 app.use('/api/courses', courseRoutes); // Mount course routes
+app.use('/api/quizzes', quizRoutes); // Mount quiz routes;
 
 // Connect to the database
 connectDB();
