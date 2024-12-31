@@ -2,12 +2,9 @@ const express = require('express');
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const {verifyToken} = require('../middleware/auth.js'); // Middleware for token validation
 
 const router = express.Router();
-
-router.get('/test', async (req, res) => {
-    res.send('Test route');
-});
 
 // User registration
 router.post('/register', async (req, res) => {
@@ -19,7 +16,7 @@ router.post('/register', async (req, res) => {
         const user = new User({
             name,
             email,
-            passwordHash: password,
+            passwordHash: await bcrypt.hash(password, 10), // Hash the password before saving
             role,
         });
         await user.save();
@@ -43,6 +40,18 @@ router.post('/login', async (req, res) => {
             expiresIn: '1h',
         });
         res.json({ token, role: user.role });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+});
+
+// Get current user details
+router.get('/me', verifyToken, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.userId).select('-passwordHash'); // Exclude passwordHash
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        res.json({ user });
     } catch (err) {
         res.status(500).json({ message: 'Server error', error: err.message });
     }
