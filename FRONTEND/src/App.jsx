@@ -6,6 +6,7 @@ import DashboardPage from "./pages/DashboardPage";
 import QuizManagementPage from "./pages/QuizManagementPage";
 import CourseManagementPage from "./pages/CourseManagementPage";
 import CourseEnrollmentPage from "./pages/CourseEnrollmentPage";
+import QuizPage from "./pages/QuizPage";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/quizzes" element={<QuizManagementPage />} />
         <Route path="/courses" element={<CourseManagementPage />} />
         <Route path="/courses/enroll" element={<CourseEnrollmentPage />} />
+        <Route path="/quiz/:quizId" element={<QuizPage />} />
       </Routes>
     </Router>
   );
