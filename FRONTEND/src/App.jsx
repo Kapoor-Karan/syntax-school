@@ -4,6 +4,8 @@ import LoginPage from "./pages/LoginPage";
 import RegistrationPage from "./pages/RegistrationPage";
 import DashboardPage from "./pages/DashboardPage";
 import QuizManagementPage from "./pages/QuizManagementPage";
+import CourseManagementPage from "./pages/CourseManagementPage";
+import CourseEnrollmentPage from "./pages/CourseEnrollmentPage";
 
 function App() {
   return (
@@ -14,6 +16,8 @@ function App() {
         <Route path="/register" element={<RegistrationPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/quizzes" element={<QuizManagementPage />} />
+        <Route path="/courses" element={<CourseManagementPage />} />
+        <Route path="/courses/enroll" element={<CourseEnrollmentPage />} />
       </Routes>
     </Router>
   );
