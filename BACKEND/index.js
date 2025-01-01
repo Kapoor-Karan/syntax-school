@@ -9,6 +9,10 @@ const progressRoutes = require('./routes/progress');
 
 const app = express();
 
+// Middleware
+app.use(cors()); // Enable CORS
+app.use(express.json()); // Parse incoming JSON payloads
+
 app.use('/api/courses', courseRoutes); // Mount course routes
 app.use('/api/quizzes', quizRoutes); // Mount quiz routes;
 app.use('/api/progress', progressRoutes); // Mount progress routes
@@ -16,9 +20,7 @@ app.use('/api/progress', progressRoutes); // Mount progress routes
 // Connect to the database
 connectDB();
 
-// Middleware
-app.use(cors()); // Enable CORS
-app.use(express.json()); // Parse incoming JSON payloads
+
 
 // Routes
 app.get('/', (req, res) => res.send('API is running...'));

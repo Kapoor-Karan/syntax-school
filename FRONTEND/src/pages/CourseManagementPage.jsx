@@ -15,8 +15,9 @@ const CourseManagementPage = () => {
     }
 
     const fetchCourses = async () => {
+      console.log("Fetching courses...");
       try {
-        const response = await fetch("http://localhost:3000/api/courses", {
+        const response = await fetch("http://localhost:3000/api/courses/all", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -25,7 +26,8 @@ const CourseManagementPage = () => {
         }
 
         const data = await response.json();
-        setCourses(data);
+        console.log("Fetched courses:", data.courses);
+        setCourses(data.courses);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching courses:", error);
@@ -38,8 +40,9 @@ const CourseManagementPage = () => {
 
   const handleAddCourse = async () => {
     const token = localStorage.getItem("token");
+  
     try {
-      const response = await fetch("http://localhost:3000/api/courses", {
+      const response = await fetch("http://localhost:3000/api/courses/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -47,36 +50,51 @@ const CourseManagementPage = () => {
         },
         body: JSON.stringify(newCourse),
       });
-
+  
       if (!response.ok) {
-        throw new Error("Failed to add course");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to add course");
       }
-
+  
       const data = await response.json();
-      setCourses([...courses, data]);
+      console.log("Course added:", data.course);
+
+      // Update courses state with the new course
+      setCourses([...courses, data.course]);
+
       setNewCourse({ title: "", description: "" });
     } catch (error) {
-      console.error("Error adding course:", error);
+      console.error("Error adding course:", error.message);
+      alert(error.message); // Alert the user about the error
     }
   };
+  
 
   const handleDeleteCourse = async (id) => {
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`http://localhost:3000/api/courses/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+        const response = await fetch(
+            `http://localhost:3000/api/courses/delete/${id}`,
+            {
+                method: "DELETE",
+                headers: { Authorization: `Bearer ${token}` },
+            }
+        );
 
-      if (!response.ok) {
-        throw new Error("Failed to delete course");
-      }
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Failed to delete course");
+        }
 
-      setCourses(courses.filter((course) => course._id !== id));
+        // Remove course from the state
+        setCourses(courses.filter((course) => course._id !== id));
+        alert("Course deleted successfully.");
     } catch (error) {
-      console.error("Error deleting course:", error);
+        console.error("Error deleting course:", error.message);
+        alert(error.message);
     }
-  };
+};
+  
 
   return (
     <div className="min-h-screen bg-gray-100">
