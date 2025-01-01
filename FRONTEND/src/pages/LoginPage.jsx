@@ -29,10 +29,8 @@ const LoginPage = () => {
 
       const data = await response.json();
 
-      // Save token (assuming response contains a token)
       localStorage.setItem("token", data.token);
 
-      // Redirect to dashboard
       window.location.href = "/dashboard";
     } catch (err) {
       setError("Invalid credentials. Please try again.");

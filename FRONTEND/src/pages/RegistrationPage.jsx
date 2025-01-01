@@ -5,7 +5,7 @@ const RegistrationPage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("student"); // Default role
+  const [role, setRole] = useState("student");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
@@ -17,6 +17,19 @@ const RegistrationPage = () => {
 
     if (!name || !email || !password) {
       setError("All fields are required.");
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    // Password validation
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters long.");
       return;
     }
 
@@ -34,7 +47,7 @@ const RegistrationPage = () => {
       }
 
       setSuccess(true);
-      setTimeout(() => navigate("/login"), 2000); // Redirect to login after success
+      setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
       setError(err.message);
     }

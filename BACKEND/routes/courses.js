@@ -14,11 +14,11 @@ router.post('/create', verifyToken, isInstructor, async (req, res) => {
             description,
             videoUrl: videoUrl || null,
             resources: resources || [],
-            createdBy: req.user.userId, // Instructor ID from JWT
+            createdBy: req.user.userId,
         });
 
         await course.save();
-        res.status(201).json(course); // Return the created course directly
+        res.status(201).json(course);
     } catch (err) {
         res.status(500).json({ message: 'Failed to create course', error: err.message });
     }
@@ -27,7 +27,7 @@ router.post('/create', verifyToken, isInstructor, async (req, res) => {
 // Get all courses
 router.get('/all', async (req, res) => {
     try {
-        const courses = await Course.find().populate('createdBy', 'name'); // Include instructor name
+        const courses = await Course.find().populate('createdBy', 'name');
         res.json({ message: 'Courses fetched successfully', courses });
     } catch (err) {
         res.status(500).json({ message: 'Failed to fetch courses', error: err.message });
@@ -52,15 +52,19 @@ router.put('/update/:id', verifyToken, isInstructor, async (req, res) => {
         const course = await Course.findById(req.params.id);
         if (!course) return res.status(404).json({ message: 'Course not found' });
 
-        if (course.createdBy.toString() !== req.user.userId)
-            return res.status(403).json({ message: 'You do not have permission to edit this course' });
+        // Ensure only the creator of the course can update it
+        if (course.createdBy.toString() !== req.user.userId) {
+            return res.status(403).json({ message: 'You do not have permission to update this course' });
+        }
 
+        // Perform update
         const updatedCourse = await Course.findByIdAndUpdate(req.params.id, req.body, { new: true });
         res.json({ message: 'Course updated successfully', updatedCourse });
     } catch (err) {
         res.status(500).json({ message: 'Failed to update course', error: err.message });
     }
 });
+
 
 // Delete a course (Instructor only)
 router.delete('/delete/:id', verifyToken, isInstructor, async (req, res) => {
@@ -73,7 +77,6 @@ router.delete('/delete/:id', verifyToken, isInstructor, async (req, res) => {
             return res.status(403).json({ message: 'You do not have permission to delete this course' });
         }
 
-        // Use deleteOne method
         await Course.deleteOne({ _id: req.params.id });
         res.json({ message: 'Course deleted successfully' });
     } catch (err) {
@@ -84,11 +87,33 @@ router.delete('/delete/:id', verifyToken, isInstructor, async (req, res) => {
 // Fetch enrolled courses for a user
 router.get('/enrolled', verifyToken, async (req, res) => {
     try {
-      const enrolledCourses = await Course.find({ students: req.user.userId }); // Assuming 'students' is an array in the Course schema
-      res.json({ message: 'Enrolled courses fetched successfully', courses: enrolledCourses });
+        const enrolledCourses = await Course.find({ students: req.user.userId });
+        res.json({ message: 'Enrolled courses fetched successfully', courses: enrolledCourses });
     } catch (err) {
-      res.status(500).json({ message: 'Failed to fetch enrolled courses', error: err.message });
+        res.status(500).json({ message: 'Failed to fetch enrolled courses', error: err.message });
     }
-  });  
+});  
+
+// Enroll a student in a course
+router.post('/:id/enroll', verifyToken, async (req, res) => {
+    try {
+        const course = await Course.findById(req.params.id);
+        if (!course) return res.status(404).json({ message: 'Course not found' });
+
+        // Check if the student is already enrolled
+        if (course.students.includes(req.user.userId)) {
+            return res.status(400).json({ message: 'You are already enrolled in this course' });
+        }
+
+        // Add the student to the course
+        course.students.push(req.user.userId);
+        await course.save();
+
+        res.status(200).json({ message: 'Enrolled successfully', course });
+    } catch (err) {
+        res.status(500).json({ message: 'Failed to enroll in course', error: err.message });
+    }
+});
+
 
 module.exports = router;
