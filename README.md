@@ -6,7 +6,7 @@
 
 _A modern e-learning platform for mastering computer science._
 
-[Demo](http://ec2-13-61-7-254.eu-north-1.compute.amazonaws.com:8080/) · [Report Bug](https://github.com/harshpreet931/markd/issues) · [Request Feature](https://github.com/harshpreet931/markd/issues)
+[Demo](https://syntax-school-frontend.vercel.app/login) · [Report Bug](https://github.com/harshpreet931/markd/issues) · [Request Feature](https://github.com/harshpreet931/markd/issues)
 
 </div>
 
