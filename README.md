@@ -66,7 +66,7 @@ Syntax School is an interactive learning platform for computer science enthusias
 {
   "node": ">=14.x",
   "npm": ">=6.x",
-  "mongodb": ">=4.x" // can be local or cloud-based.
+  "mongodb": ">=4.x"
 }
 ```
 
